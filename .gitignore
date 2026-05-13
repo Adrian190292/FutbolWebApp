@@ -1,0 +1,17 @@
+# Compilados
+*.exe
+*.dll
+*.obj
+
+# Temporales
+*.tmp
+*.bak
+*.log
+
+# Carpetas build
+Debug/
+Release/
+
+# Visual Studio
+.vs/
+*.user
