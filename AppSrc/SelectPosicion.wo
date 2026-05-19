@@ -1,8 +1,4 @@
-﻿// C:\DataFlex Projects\FutbolWebApp\AppSrc\SelectPosicion.wo
-// SelectPosicion
-//
-
-Use cWebView.pkg
+﻿Use cWebView.pkg
 Use cWebList.pkg
 Use cWebMenuGroup.pkg
 Use cWebMenuItem.pkg
@@ -10,6 +6,7 @@ Use cWebColumnButton.pkg
 Use cWebColumn.pkg
 
 Use cposicionDataDictionary.dd
+Use ZoomPosicion.wo
 
 Object oSelectPosicion is a cWebView
     Set psCaption to "SelectPosicion"
@@ -22,9 +19,8 @@ Object oSelectPosicion is a cWebView
     Object oposicion_DD is a cposicionDataDictionary
     End_Object 
 
-    Set Main_DD To oposicion_DD
-    Set Server  To oposicion_DD
-
+    Set Main_DD to oposicion_DD
+    Set Server  to oposicion_DD
 
     Object oList is a cWebList
         Set piColumnSpan to 0
@@ -49,8 +45,7 @@ Object oSelectPosicion is a cWebView
             Set psBtnCssClass to "WebButtonIcon WebIcon_Info"
             Set peAlign to alignRight
 
-// ToDo: Fill in the from-main Zoom view object name for navigate forward
-//            WebRegisterPath ntNavigateForward oZoomView
+            WebRegisterPath ntNavigateForward oZoomPosicion
 
             Procedure OnClick
                 Send NavigatePath
@@ -62,18 +57,13 @@ Object oSelectPosicion is a cWebView
 
         End_Object 
 
-// ToDo: Fill in the from-parent child Select view object name for navigate forward
-//        WebRegisterPath ntNavigateForward oSelectView
-
         Procedure OnRowClick String sRowId
             tWebNavigateData NavigateData
             Get GetNavigateData to NavigateData
 
             Case Begin
                 Case (NavigateData.eNavigateType = nfFromParent)
-// ToDo: Fill in the from-parent child Select view object name for navigate forward
-Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not yet defined"
-//                    Send NavigateForward of oSelectView Self
+                    Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not yet defined"
                     Case Break
 
                 Case (NavigateData.eNavigateType = nfFromChild)
@@ -81,13 +71,11 @@ Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not y
                     Case Break
 
                 Case (NavigateData.eNavigateType = nfFromMain)
-                    Send NavigateClose Self
+                    Send NavigateForward of oZoomPosicion Self
                     Case Break
 
-                Case Else // must be nfUndefined
-// ToDo: Fill in the from-parent child Select view object name for navigate forward
-Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not yet defined"
-//                    Send NavigateForward of oSelectView Self
+                Case Else
+                    Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not yet defined"
 
             Case End
         End_Procedure
@@ -114,8 +102,7 @@ Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not y
             Set psCSSClass to "WebClearMenuItem"
             Set psCaption to "New"
 
-// ToDo: Fill in the from-main Zoom view object name for navigate forward
-//            WebRegisterPath ntNavigateForward oZoomView
+            WebRegisterPath ntNavigateForward oZoomPosicion
 
             Procedure OnClick
                 Send NavigatePath
@@ -134,24 +121,19 @@ Error DFERR_PROGRAM "NavigateForward to this from-parent child Select view not y
 
         Case Begin
             Case (NavigateData.eNavigateType = nfFromParent)
-                // If from parent, this is a constrained drill down
                 Case Break
 
             Case (NavigateData.eNavigateType = nfFromChild)
-                // If from child, this is a probably a parent lookup from a Zoom
                 Case Break
 
             Case (NavigateData.eNavigateType = nfFromMain)
-                // If from main, this is a probably a main-file lookup from a Zoom
                 WebSet pbRender of oDetailButton to False
                 Case Break
 
-            Case Else // must be nfUndefined
-                // This may be the start of a drilldown query or this may be used for some kind of custom query.
+            Case Else
 
         Case End
 
     End_Procedure
 
-
-End_Object 
+End_Object

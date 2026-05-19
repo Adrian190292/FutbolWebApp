@@ -1,8 +1,4 @@
-﻿// C:\DataFlex Projects\FutbolWebApp\AppSrc\ZoomJugador.wo
-// ZoomJugador
-//
-
-Use cWebView.pkg
+﻿Use cWebView.pkg
 Use cWebPanel.pkg
 Use cWebMenuGroup.pkg
 Use cWebMenuItem.pkg
@@ -11,6 +7,7 @@ Use cWebForm.pkg
 Use cligaDataDictionary.dd
 Use cequipoDataDictionary.dd
 Use cjugadorDataDictionary.dd
+Use SelectPosicion.wo
 
 Object oZoomJugador is a cWebView
     Set piColumnCount to 12
@@ -25,16 +22,15 @@ Object oZoomJugador is a cWebView
     End_Object 
 
     Object oequipo_DD is a cequipoDataDictionary
-        Set DDO_Server To oliga_DD
+        Set DDO_Server to oliga_DD
     End_Object 
 
     Object ojugador_DD is a cjugadorDataDictionary
-        Set DDO_Server To oequipo_DD
+        Set DDO_Server to oequipo_DD
     End_Object 
 
-    Set Main_DD To ojugador_DD
-    Set Server  To ojugador_DD
-
+    Set Main_DD to ojugador_DD
+    Set Server  to ojugador_DD
 
     Object oWebMainPanel is a cWebPanel
         Set piColumnCount to 12
@@ -106,7 +102,24 @@ Object oZoomJugador is a cWebView
                 Send RefreshRecord
             End_Procedure
 
-        End_Object 
+        End_Object
+
+        // Tarea 4 — Botón Undefined: ZoomJugador → SelectPosicion
+        // No hay relación directa entre jugador y posicion (va via jugadorposicion)
+        // Por eso se usa ntNavigateForwardCustom (nfUndefined)
+        Object oPosicionBtn is a cWebMenuItem
+            Set psCaption to "Ver Posiciones"
+            Set psCSSClass to "WebIcon_Search"
+            Set peActionDisplay to adMenu
+
+            WebRegisterPath ntNavigateForwardCustom oSelectPosicion
+
+            Procedure OnClick
+                Send NavigatePath
+            End_Procedure
+
+        End_Object
+
     End_Object 
 
     Procedure SetActionButtons
@@ -118,14 +131,15 @@ Object oZoomJugador is a cWebView
         Get GetNavigateData to NavigateData
         Get HasRecord of hoDD to bHasRecord
 
-        // let's hide all buttons and then Show the ones we want
         WebSet pbRender of oEditBtn to False
         WebSet pbRender of oSaveBtn to False
         WebSet pbRender of oCancelChangesBtn to False
         WebSet pbRender of oDeleteBtn to False
+        WebSet pbRender of oPosicionBtn to False
 
         If (NavigateData.bReadOnly) Begin
             WebSet pbRender of oEditBtn to True
+            WebSet pbRender of oPosicionBtn to bHasRecord
         End
         Else Begin
             WebSet pbRender of oSaveBtn to True
@@ -135,11 +149,9 @@ Object oZoomJugador is a cWebView
     End_Procedure
 
     Procedure OnViewSaved Handle hoServer Boolean bChanged
-        // Close after save
         Send NavigateClose Self
     End_Procedure
 
-    // this will close the view after a delete
     Procedure OnViewDeleted Handle hoDDO
         Send NavigateClose Self
     End_Procedure
@@ -147,18 +159,15 @@ Object oZoomJugador is a cWebView
     Procedure OnNavigateForward tWebNavigateData NavigateData Integer hoInvokingView Integer hoInvokingObject
         Case Begin
             Case (NavigateData.eNavigateType = nfFromMain)
-                // If from main, this is a propbably a main file Select to Zoom.
                 Case Break
 
             Case (NavigateData.eNavigateType = nfFromParent)
-                // If from parent, this is a constrained drill down.
                 Case Break
 
             Case (NavigateData.eNavigateType = nfFromChild)
-                // If from child, this is a probably a parent Zoom from a Zoom.
                 Case Break
 
-            Case Else // must be nfUndefined
+            Case Else // nfUndefined
 
         Case End
 
@@ -166,4 +175,4 @@ Object oZoomJugador is a cWebView
 
     End_Procedure
 
-End_Object 
+End_Object
